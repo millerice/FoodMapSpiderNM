@@ -1,0 +1,6 @@
+requests
+Scrapy
+etree
+urllib
+pyquery
+pymysql
