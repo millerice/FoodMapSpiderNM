@@ -1,0 +1,1 @@
+alert("javascript外链式！");

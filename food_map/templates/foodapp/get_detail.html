@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据展示</title>
+    <script src="/static/lib/esl.js"></script>
+    <script src="/static/lib/config.js"></script>
+    <script src="/static/lib/jquery.min.js"></script>
+    <script src="/static/lib/facePrint.js"></script>
+
+   <style>
+            html, body {
+                   width: 100%;
+                   height: 100%;
+                   font-family:"微软雅黑";
+                   background-color: #2e323c;
+                   margin-left:10px;
+                   margin-top: 0px;
+                   /* overflow: hidden; */
+               }
+            #sharch{
+                 padding-top: 10px;
+                 padding-left: 5px;
+            }
+            #main1{
+{#                   width: 980px;#}
+                   height: 470px;
+                   float: left;
+                   margin-top: 30px;
+                   margin-left: 30px;
+{#                   background-color: crimson;#}
+                   overflow-x: auto;
+                   overflow-y: auto;
+                   color: white;
+               }
+            .nav {
+                width: 600px;
+                height: 50px;
+                line-height: 50px;
+                font-size: 18px;
+                margin-top: 60px;
+            }
+            .nav li:hover{
+                opacity: 0.3;
+            }
+
+            .nav li{
+                list-style: none;
+                border: solid 1px black;
+                width: 240px;
+
+            }
+            .nav li a {
+                margin-left: 60px;
+                text-decoration: none;
+                color: white;
+            }
+            #left{
+                height: 600px;
+                width: 18%;
+                background-color: #24242a;
+                float: left;
+                margin-right: 12px;
+                margin-top: 20px;
+            }
+            #right{
+                height: 600px;
+                width: 75%;
+{#                background-color: #333333;#}
+                float: left;
+            }
+            #right_top{
+                height: 50px;
+                width: 1030px;
+                background-color: #24242a;
+                margin-bottom: 12px;
+                line-height: 50px;
+            }
+            #right1{
+                height: 538px;
+                width: 1030px;
+                background-color: #24242a;
+            }
+
+           </style>
+
+    </head>
+    <body>
+    <div id="left">
+        <h3 style="color: #42638e; text-align: center">美食地图</h3>
+        <div class="nav">
+            <li style="background-color: #42638e"><a style="color: white; font-size: 26px; ">数据分类</a></li>
+            <li><a href="bmap.html">美食热力图</a></li>
+            <li><a href="http://127.0.0.1:8000">美食地图</a></li>
+            <li><a href="pie_map.html">美食饼状图</a></li>
+            <li><a href="word_cloud.html">美食云图</a></li>
+            <li><a href="get_detail.html" style="color: #777777">美食详细数据查询</a></li>
+        </div>
+
+    </div>
+    <div id="right">
+        <div id="right_top">
+            <h2 style="text-align: center; color:#42638e">美食地图大数据展示</h2>
+        </div>
+
+        <div id="right1">
+            <div id="sharch">
+                &nbsp;
+                <label for="" style="color: white;">省&nbsp;份：</label>
+                <select id="pro" style="width:140px; height:25px;" name="proname" >
+                <option value="">请选择省</option>
+                </select>
+                <select id="city" style="width:140px; height:25px;" name="cityname">
+                    <option value="">请选择市</option>
+                </select>
+                <select id="dis" style="width:140px; height:25px;" name="disname">
+                    <option value="">请选择区县</option>
+                </select>
+                &nbsp;
+               <label for="" style="color: white;">类&nbsp;别：</label>
+                <select style="width:140px; height:25px;" name="date" id="type_name">
+                     <option value="">请选择美食的类别</option>
+                </select>
+                &nbsp;
+                <label for="" style="color: white;">评&nbsp;分：</label>
+                <select style="width:140px; height:25px;" name="date" id="evaluate">
+                     <option value="">请选择评分</option>
+                </select>
+                <!-- 11.查询按钮 -->
+                <input type="submit" value="查询" style="width:60px; height:25px;"  onclick="fun()">
+            </div>
+
+            <div id="main1"></div>
+
+        </div>
+    </div>
+    </body>
+
+<script type="text/javascript">
+          function  fun() {
+              var pro = $('#pro').val();
+              var city = $('#city').val();
+              var dis = $('#dis').val();
+              var type_name = $('#type_name').val();
+              var evaluate = $('#evaluate').val();
+              $.ajax({
+                  type: 'post',
+                  url: '/data_detail/',
+                  dataType: 'json',
+                  async: false,
+                  data: {'pro': pro, 'city': city, 'dis': dis, 'type_name': type_name, 'evaluate': evaluate},
+                  success: function (data) {
+                      data = data.data
+                      var html = "<table>";
+                      for(var i=0; i<data.length; i++){
+                            var user = data[i]
+                            html += "<tr><td>"+"店铺名："+user.shop_name+"</td><td>"+"店铺地址："+user.address +"</td><td>"+"联系电话："+user.phone+"</td><td>"+"营业时间："+user.work_time+ "</td><td>"+"评论量："+user.evaluate_num+"</td><td>"+"好评："+user.good_level+"</td><td>"+"中评："+user.commonly_level+"</td><td>"+"差评："+user.bad_level+"</td><td>"+"评分："+user.evaluate+ "</td></tr>";
+                        }
+                      html += "</table>";
+                      $("#main1").html(html);
+                  },
+                  error: function () {
+                      alert('查询条件错误，请重新选择！')
+                  },
+              });
+          }
+</script>
+
+
+<script type="text/javascript">
+    window.onload=function (){
+          var html = "<table>";
+          for(var i=0; i<10; i++){
+                html += "<tr><td>"+"店铺名："+"赏渔重庆鱼火锅"+"</td><td>"+"店铺地址："+"许昌市东城区新兴路东段秋湖湿地商业街1号楼1层18商铺" +"</td><td>"+"联系电话："+"15637282912"+"</td><td>"+"营业时间："+"9:00--22:00"+ "</td><td>"+"评论量："+"4536"+"</td><td>"+"好评："+"4000"+"</td><td>"+"中评："+"500"+"</td><td>"+"差评："+"36"+"</td><td>"+"评分："+"4.6"+ "</td></tr>";
+
+          }
+          html += "</table>";
+          $("#main1").html(html);
+    }
+</script>
+
+
+
+<script type="text/javascript">
+        $(function() {
+            //页面加载完成后获取类型信息
+            $.get('/get_type/', function (dic) {
+                type_name = $('#type_name')
+                $.each(dic.data, function (index, item) {
+                    type_name.append('<option value=' + item[0] + '>' + item[0] + '</option>');
+                })
+            });
+        })
+        </script>
+<script type="text/javascript">
+        $(function() {
+            //页面加载完成后获取评分信息
+            $.get('/get_form/', function (dic) {
+                evaluate = $('#evaluate')
+                $.each(dic.data, function (index, item) {
+                    evaluate.append('<option value=' + item[0] + '>' + item[0] + '</option>');
+                })
+            });
+        })
+        </script>
+<script type="text/javascript">
+        $(function(){
+            //页面加载完成后获取省信息，并添加到省select
+            $.get('/area2/',function(dic) {
+                pro=$('#pro')
+                $.each(dic.data,function(index,item){
+                    pro.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                })
+            });
+            //为省select绑定change事件，获取市信息，并添加到市select
+            $('#pro').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    city=$('#city');
+                    city.empty().append('<option value="">请选择市</option>');
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        city.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                });
+            });
+            //为市select绑定change事件，获取区县信息，并添加到区县select
+            $('#city').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        dis.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                })
+            });
+
+        });
+    </script>
+
+
+
+
+</html>

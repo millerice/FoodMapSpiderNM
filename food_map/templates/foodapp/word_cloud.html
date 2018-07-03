@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>云图</title>
+    <title>word_cloud</title>
+    <script src="/static/clo_js/echarts.min.js"></script>
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+      <style>
+            html, body {
+                   width: 100%;
+                   height: 100%;
+                   font-family:"微软雅黑";
+                   background-color: #2e323c;
+                   margin-left:10px;
+                   margin-top: 0px;
+                   /* overflow: hidden; */
+               }
+            #sharch{
+                 padding-top: 10px;
+                 padding-left: 5px;
+            }
+            #main{
+                   width: 1000px;
+                   height: 500px;
+                   float: left;
+                   margin-top: 30px;
+                    margin-left: 30px;
+               }
+            .nav {
+                width: 600px;
+                height: 50px;
+                line-height: 50px;
+                font-size: 18px;
+                margin-top: 60px;
+            }
+            .nav li{
+                list-style: none;
+                border: solid 1px black;
+                width: 240px;
+
+            }
+            .nav li a {
+                margin-left: 60px;
+                text-decoration: none;
+                color: white;
+            }
+            #left{
+                height: 600px;
+                width: 18%;
+                background-color: #24242a;
+                float: left;
+                margin-right: 12px;
+                margin-top: 20px;
+            }
+            #right{
+                height: 600px;
+                width: 75%;
+{#                background-color: #333333;#}
+                float: left;
+            }
+            #right_top{
+                height: 50px;
+                width: 1030px;
+                background-color: #24242a;
+                margin-bottom: 12px;
+                line-height: 50px;
+            }
+            #right1{
+                height: 538px;
+                width: 1030px;
+                background-color: #24242a;
+            }
+
+           </style>
+
+    </head>
+    <body>
+    <div id="left">
+        <h3 style="color: #42638e; text-align: center">美食地图</h3>
+        <div class="nav">
+            <li style="background-color: #42638e"><a style="color: white; font-size: 26px; ">数据分类</a></li>
+            <li><a href="bmap.html">美食热力图</a></li>
+            <li><a href="http://127.0.0.1:8000">美食地图</a></li>
+            <li><a href="pie_map.html">美食饼状图</a></li>
+            <li><a href="word_cloud.html" style="color: #777777">美食云图</a></li>
+            <li><a href="get_detail.html">美食详细数据查询</a></li>
+        </div>
+    </div>
+    <div id="right">
+        <div id="right_top">
+            <h2 style="text-align: center; color:#42638e">美食地图大数据展示</h2>
+        </div>
+
+        <div id="right1">
+            <div id="sharch">
+                &nbsp;
+                <label for="" style="color: white;">省&nbsp;份：</label>
+                <select id="pro" style="width:140px; height:25px;" name="proname" >
+                <option value="">请选择省</option>
+                </select>
+                <select id="city" style="width:140px; height:25px;" name="cityname">
+                    <option value="">请选择市</option>
+                </select>
+                <select id="dis" style="width:140px; height:25px;" name="disname">
+                    <option value="">请选择区县</option>
+                </select>
+                &nbsp;
+               <label for="" style="color: white;">类&nbsp;别：</label>
+                <select style="width:140px; height:25px;" name="date" id="type_name">
+                     <option value="">请选择美食的类别</option>
+                </select>
+                &nbsp;
+                <label for="" style="color: white;">评&nbsp;分：</label>
+                <select style="width:140px; height:25px;" name="date" id="evaluate">
+                     <option value="">请选择评分</option>
+                </select>
+                <!-- 11.查询按钮 -->
+                <input type="submit" value="查询" style="width:60px; height:25px;"  onclick="fun()">
+            </div>
+
+            <div id="main" ></div>
+
+        </div>
+    </div>
+    </body>
+
+
+<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+<script type="text/javascript">
+          var data;
+          function  fun() {
+              var pro = $('#pro').val();
+              var city = $('#city').val();
+              var dis = $('#dis').val();
+              var type_name = $('#type_name').val();
+              var evaluate = $('#evaluate').val();
+              $.ajax({
+                  type: 'get',
+                  url: '/get_pie_data/',
+                  dataType: 'json',
+                  async: false,
+                  data: {'pro': pro, 'city': city, 'dis': dis, 'type_name': type_name, 'evaluate': evaluate},
+                  success: function (data1) {
+                      data = data1;
+                  },
+                  error: function () {
+                      alert('查询条件错误，请重新选择！')
+                  },
+              });
+
+              require.config({paths: {echarts: 'http://echarts.baidu.com/build/dist'}});
+              // 使用
+              require(['echarts', 'echarts/chart/wordCloud'],    //字符云],
+                  function (ec) {
+                      // 基于准备好的dom，初始化echarts图表
+                      var myChart = ec.init(document.getElementById('main'));
+                      function createRandomItemStyle() {
+                          return {
+                              normal: {
+                                  color: 'rgb(' + [
+                                      Math.round(Math.random() * 160),
+                                      Math.round(Math.random() * 160),
+                                      Math.round(Math.random() * 160)
+                                  ].join(',') + ')'
+                              }
+                          };
+                      }
+
+                      option = {
+                          title: {
+                              text: '美食云图',
+                              link: 'http://www.google.com/trends/hottrends'
+                          },
+                          tooltip: {
+                              show: true
+                          },
+                          series: [{
+                              name: '美食云图',
+                              type: 'wordCloud',
+                              size: ['80%', '80%'],
+                              textRotation: [0, 45, 90, -45],
+                              textPadding: 0,
+                              autoSize: {
+                                  enable: true,
+                                  minSize: 14
+                              },
+                              data:data.data,
+{#                              data:[{'value': 446, 'name': '沸炉火锅(和平里店)'}, {'value': 1837, 'name': '名鼎阁自助烤肉火锅(望京店)'}, {'value': 1143, 'name': '黄门老灶火锅(亚运村店)'}, {'value': 165, 'name': '重来记忆老灶火锅(百子湾店)'}, {'value': 110, 'name': '蜀香楼健康火锅(文化广场店)'}, {'value': 1700, 'name': '德羊府老北京羊蝎子火锅(建设街店)'}, {'value': 729, 'name': '约畔火锅'}]#}
+                          }]
+                      };
+                      myChart.setOption(option);
+                  }
+              );
+          }
+
+
+
+          require.config({paths: {echarts: 'http://echarts.baidu.com/build/dist'}});
+              // 使用
+              require(['echarts', 'echarts/chart/wordCloud'],    //字符云],
+                  function (ec) {
+                      // 基于准备好的dom，初始化echarts图表
+                      var myChart = ec.init(document.getElementById('main'));
+                      function createRandomItemStyle() {
+                          return {
+                              normal: {
+                                  color: 'rgb(' + [
+                                      Math.round(Math.random() * 160),
+                                      Math.round(Math.random() * 160),
+                                      Math.round(Math.random() * 160)
+                                  ].join(',') + ')'
+                              }
+                          };
+                      }
+
+                      option = {
+                          title: {
+                              text: '美食云图',
+                              link: 'http://www.google.com/trends/hottrends'
+                          },
+                          tooltip: {
+                              show: true
+                          },
+                          series: [{
+                              name: '美食云图',
+                              type: 'wordCloud',
+                              size: ['80%', '80%'],
+                              textRotation: [0, 45, 90, -45],
+                              textPadding: 0,
+                              autoSize: {
+                                  enable: true,
+                                  minSize: 14
+                              },
+{#                              data:data.data,#}
+                              data:[{'name': '虾涮虾涮', 'value': 3629}, {'name': '维肯国际电音俱乐部', 'value': 64}, {'name': '老诚一锅羊蝎子(华联店)', 'value': 3354}, {'name': '辰龙城', 'value': 0}, {'name': '猫眼披萨(国泰宜宾店)', 'value': 180}, {'name': 'AI尚烧烤', 'value': 5}, {'name': '甲丁南坪打边炉', 'value': 4}, {'name': '泳錡楼', 'value': 112}, {'name': '园景Parkside(中粮祥云店)', 'value': 15}, {'name': '京樱日本料理(中粮祥云店)', 'value': 55}, {'name': '寻鸭季(中粮祥云店)', 'value': 44}, {'name': '海龙海鲜酒楼', 'value': 22}, {'name': '京瑞祥烤羊庄', 'value': 28}, {'name': "Wendy's Garden温笛花園(罗马湖店)", 'value': 3}, {'name': '雄记潮汕牛肉火锅(荣祥广场店)', 'value': 138}, {'name': '靓码头重庆老火锅', 'value': 23}, {'name': '渝味村(九重汇店)', 'value': 516}, {'name': '依皓厨房(祥云小镇店)', 'value': 23}, {'name': '虾士(祥云店)', 'value': 10}, {'name': '蝎会儿', 'value': 405}, {'name': '兴盛源烤鱼川湘菜', 'value': 19}, {'name': '嚼谷潮汕牛肉海鲜馆(顺义店)', 'value': 35}, {'name': '喇喇土豆汤', 'value': 5}, {'name': '金明天地中海美食餐厅(新国展欧陆店)', 'value': 136}, {'name': '熹園酒楼(罗马湖店)', 'value': 2}, {'name': '大阪亭拉面(祥云小镇店)', 'value': 6}, {'name': '得意(顺义店)', 'value': 0}, {'name': '哈萨里披萨(后沙峪店)', 'value': 6}, {'name': '玩茗堂(京林大厦店)', 'value': 0}, {'name': '憩舍茶室', 'value': 0}, {'name': '老城一锅(后沙峪店)', 'value': 0}, {'name': '汇沅米线', 'value': 1865}, {'name': '一0八匠', 'value': 0}, {'name': '松伊寿司', 'value': 2}, {'name': '川渝香辣蟹', 'value': 1}, {'name': '标记·潮小馆', 'value': 30}, {'name': '京樱日本料理(欧陆时尚店)', 'value': 20}, {'name': '王婆大虾', 'value': 144}, {'name': '乐享汇烘焙教室(欧陆店)', 'value': 5}, {'name': '太素素食(祥云小镇店)', 'value': 0}, {'name': '利强记香港小吃(顺义华联店)', 'value': 125}, {'name': '北京又一季农庄(北务店)', 'value': 0}, {'name': '吴家锅贴小酒馆', 'value': 20}, {'name': '山城风串串王火锅(石园店)', 'value': 1}, {'name': '人民公社大食堂(后沙峪店)', 'value': 39}, {'name': '猫二烤鱼', 'value': 44}, {'name': '童话DIY烘焙(聚乐汇店)', 'value': 126}, {'name': '拔丝蛋糕', 'value': 4}, {'name': '桂林米粉', 'value': 18}, {'name': '瓦罐香沸(南法信店)', 'value': 2}, {'name': '哈尔滨独一处', 'value': 31}, {'name': '维特心语蛋糕店', 'value': 0}, {'name': '悦成创意铁板烧(东大桥微尚店)', 'value': 322}, {'name': '丹江渔村(首都机场店)', 'value': 35}, {'name': '老诚一锅(天竺店)', 'value': 0}, {'name': '三国鼎盛茶楼(新国展店)', 'value': 10}, {'name': '杨铭宇黄焖鸡米饭(南法信店)', 'value': 470}, {'name': '寻味寿司', 'value': 4}, {'name': '燕语生活', 'value': 4}, {'name': '胖妹重庆小面', 'value': 49}, {'name': '嘉玛披萨', 'value': 0}, {'name': '秦腔·蜀韵(祥云小镇店)', 'value': 11}, {'name': '杨国福麻辣烫(石门聚乐汇店)', 'value': 2276}, {'name': '豆豆排骨(绿港一区分店)', 'value': 1}, {'name': '1942', 'value': 47}, {'name': '重庆小面', 'value': 34}, {'name': 'musang.w猫山王榴莲甜品', 'value': 4}, {'name': '如意馄饨(南法信店)', 'value': 15}, {'name': '新货郎', 'value': 0}, {'name': '让我们见个面(中粮祥云店)', 'value': 13}, {'name': '阿咪啄啄AMAZE(祥云小镇店)', 'value': 1}, {'name': '彤顺德海鲜火锅(马坡店)', 'value': 240}, {'name': '和园景逸大酒店网球场', 'value': 942}],
+                          }]
+                      };
+                      myChart.setOption(option);
+                  }
+              );
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+        $(function(){
+            //页面加载完成后获取省信息，并添加到省select
+            $.get('/area2/',function(dic) {
+                pro=$('#pro')
+                $.each(dic.data,function(index,item){
+                    pro.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                })
+            });
+            //为省select绑定change事件，获取市信息，并添加到市select
+            $('#pro').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    city=$('#city');
+                    city.empty().append('<option value="">请选择市</option>');
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        city.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                });
+            });
+            //为市select绑定change事件，获取区县信息，并添加到区县select
+            $('#city').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        dis.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                })
+            });
+        });
+    </script>
+<script type="text/javascript">
+        $(function() {
+            //页面加载完成后获取类型信息
+            $.get('/get_type/', function (dic) {
+                type_name = $('#type_name')
+                $.each(dic.data, function (index, item) {
+                    type_name.append('<option value=' + item[0] + '>' + item[0] + '</option>');
+                })
+            });
+        })
+        </script>
+<script type="text/javascript">
+        $(function() {
+            //页面加载完成后获取评分信息
+            $.get('/get_form/', function (dic) {
+                evaluate = $('#evaluate')
+                $.each(dic.data, function (index, item) {
+                    evaluate.append('<option value=' + item[0] + '>' + item[0] + '</option>');
+                })
+            });
+        })
+        </script>
+
+</html>

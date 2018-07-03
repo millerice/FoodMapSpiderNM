@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>省市区列表</title>
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            //页面加载完成后获取省信息，并添加到省select
+            $.get('/area2/',function(dic) {
+                pro=$('#pro')
+                $.each(dic.data,function(index,item){
+                    pro.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                })
+            });
+            //为省select绑定change事件，获取市信息，并添加到市select
+            $('#pro').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    city=$('#city');
+                    city.empty().append('<option value="">请选择市</option>');
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        city.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                });
+            });
+            //为市select绑定change事件，获取区县信息，并添加到区县select
+            $('#city').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        dis.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                })
+            });
+
+        });
+    </script>
+</head>
+<body>
+<select id="pro">
+    <option value="">请选择省</option>
+</select>
+<select id="city">
+    <option value="">请选择市</option>
+</select>
+<select id="dis">
+    <option value="">请选择区县</option>
+</select>
+</body>
+</html>

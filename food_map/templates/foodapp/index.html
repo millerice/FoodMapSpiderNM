@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>美食地图</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, initial-scale=1.0, user-scalable=no" />
+        <script src="/static/lib/esl.js"></script>
+        <script src="/static/lib/config.js"></script>
+        <script src="/static/lib/jquery.min.js"></script>
+        <script src="/static/lib/facePrint.js"></script>
+        <script src="/static/clo_js/echarts.min.js"></script>
+        <script src="/static/js/jquery-1.12.4.min.js"></script>
+        <script src="http://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
+        <style>
+            html, body {
+                   width: 100%;
+                   height: 100%;
+                   font-family:"微软雅黑";
+                   background-color: #2e323c;
+                   margin-left:10px;
+                   margin-top: 0px;
+                   /* overflow: hidden; */
+               }
+            #sharch{
+                 padding-top: 10px;
+                 padding-left: 5px;
+            }
+            #main1{
+                   width: 500px;
+                   height: 300px;
+                   float: left;
+                   margin-top: 30px;
+                   margin-left: 10px;
+{#                   background-color: aqua;#}
+               }
+
+            #main3{
+                   width: 501px;
+                   height: 261px;
+{#                   background-color: orangered;#}
+
+               }
+
+            #main3_title{
+                width: 502px;
+                height: 300px;
+                margin-top: 30px;
+                margin-left: 520px;
+{#                background-color: blue;#}
+                text-align: center;
+                color: white;
+                position:absolute;
+            }
+            #main3_title span{
+                height: 60px;
+                line-height: 38px;
+{#                background-color: blue;#}
+            }
+
+            .nav {
+                width: 600px;
+                height: 50px;
+                line-height: 50px;
+                font-size: 18px;
+                margin-top: 60px;
+            }
+            .nav li:hover{
+                opacity: 0.3;
+            }
+
+            .nav li{
+                list-style: none;
+                border: solid 1px black;
+                width: 240px;
+
+            }
+            .nav li a {
+                margin-left: 60px;
+                text-decoration: none;
+                color: white;
+            }
+            #left{
+                height: 668px;
+                width: 18%;
+                background-color: #24242a;
+                float: left;
+                margin-right: 12px;
+                margin-top: 20px;
+            }
+            #right{
+                height: 690px;
+                width: 75%;
+{#                background-color: #333333;#}
+                float: left;
+            }
+            #right_top{
+                height: 50px;
+                width: 1030px;
+                background-color: #24242a;
+                margin-bottom: 12px;
+                line-height: 50px;
+            }
+            #right1{
+                height: 608px;
+                width: 1030px;
+                background-color: #24242a;
+            }
+
+                #right_right_title{
+                    width: 1012px;
+                    height: 240px;
+{#                    float: left;#}
+                    margin-top: 330px;
+                    margin-left: 10px;
+                    text-align: center;
+                    color: white;
+{#                    background-color: chartreuse;#}
+                    position:absolute
+{#                    line-height: 50px;#}
+                }
+                #right_right_title span{
+                     height: 60px;
+                     line-height: 38px;
+                }
+               #right_right{
+{#                   width: 370px;#}
+                   height: 201px;
+                   overflow-x: auto;
+                   overflow-y: auto;
+{#                   color: chartreuse;#}
+{#                   background-color: firebrick;#}
+               }
+           </style>
+    </head>
+    <body>
+    <div id="left">
+        <h3 style="color: #42638e; text-align: center">美食地图</h3>
+        <div class="nav">
+            <li style="background-color: #42638e"><a style="color: white; font-size: 26px; ">数据分类</a></li>
+            <li><a href="bmap.html">美食热力图</a></li>
+            <li><a href="http://127.0.0.1:8000" style="color: #777777">美食地图</a></li>
+            <li><a href="pie_map.html">美食饼状图</a></li>
+            <li><a href="word_cloud.html">美食云图</a></li>
+            <li><a href="get_detail.html">美食详细数据查询</a></li>
+        </div>
+    </div>
+    <div id="right">
+        <div id="right_top">
+            <h2 style="text-align: center; color:#42638e">美食地图大数据展示</h2>
+        </div>
+
+        <div id="right1">
+            <div id="sharch">
+                &nbsp;
+                <label for="" style="color: white;">省&nbsp;份：</label>
+                <select id="pro" style="width:140px; height:25px;" name="proname" >
+                <option value="">请选择省</option>
+                </select>
+                <select id="city" style="width:140px; height:25px;" name="cityname">
+                    <option value="">请选择市</option>
+                </select>
+                <select id="dis" style="width:140px; height:25px;" name="disname">
+                    <option value="">请选择区县</option>
+                </select>
+                &nbsp;
+               <label for="" style="color: white;">类&nbsp;别：</label>
+                <select style="width:140px; height:25px;" name="date" id="type_name">
+                     <option value="">请选择美食的类别</option>
+                </select>
+                &nbsp;
+                <label for="" style="color: white;">评&nbsp;分：</label>
+                <select style="width:140px; height:25px;" name="date" id="evaluate">
+                     <option value="">请选择评分</option>
+                </select>
+                <!-- 11.查询按钮 -->
+                <input type="submit" value="查询" style="width:60px; height:25px;"  onclick="fun()">
+            </div>
+
+            <div id="main1" ></div>
+            <div id="right_right_title">
+                <span>详细数据展示</span>
+                <div id="right_right"></div>
+            </div>
+
+            <div id="main3_title">
+{#                <h5>美食云图展示</h5>#}
+                <span>美食饼状图展示</span>
+                <div id="main3"></div>
+            </div>
+
+        </div>
+    </div>
+    </body>
+
+<script type="text/javascript">
+          var data_z;
+          var ch;
+          function  fun() {
+          var pro = $('#pro').val();
+          var city = $('#city').val();
+          var dis = $('#dis').val();
+          var type_name = $('#type_name').val();
+          var evaluate = $('#evaluate').val();
+          $.ajax({
+              type: 'get',
+              url: '/get_province/',
+              dataType: 'json',
+              async:false,
+              data: {'pro': pro, 'city': city, 'dis': dis, 'type_name':type_name, 'evaluate': evaluate},
+              success: function (data) {
+                      data_z = data;
+                      var data_s = data.data_d;
+                      var html = "<table style='color:white'>";
+                      for (var i = 0; i < data_s.length; i++) {
+                          var user = data_s[i];
+                          html += "<tr><td>"+ "销量:" + user.sale + "</td><td><td>" + "评论量:" + user.evaluate_num + "</td><td><td>"  + "评分:" + user.evaluate + "</td><td><td>"+"店铺名:" + user.shop_name + "</td><td><td>"  + "店铺地址:" + user.address + "</td></tr>";
+                      }
+                      html += "</table>";
+                      $("#right_right").html(html);
+              },
+              error: function(){
+                  alert('查询条件错误，请重新选择！')
+              },
+          });
+
+        require(['/static/dist/echarts'], function (echarts) {
+                  // console.log('f1')
+                  require(['/static/map/js/china'], function () {
+        var chs = echarts.init(document.getElementById('main1'));
+                      var itemStyle = {
+                          normal: {
+                              borderColor: 'rgba(0, 0, 0, 0.2)'
+                          },
+                          emphasis: {
+                              shadowOffsetX: 0,
+                              shadowOffsetY: 0,
+                              shadowBlur: 20,
+                              borderWidth: 0,
+                              shadowColor: 'rgba(0, 0, 0, 0.5)'
+                          }
+                      };
+                      chs.setOption({
+                          tooltip: {},
+                          title: {
+                              text: '美食地图数据统计',
+                              subtext: '毕设_王凯',
+                              left: 'center'
+                          },
+                          legend: {
+                              orient: 'vertical',
+                              left: 'left',
+                              data: ['美食总量']
+                          },
+                          visualMap: {
+                              min: 0,
+                              max: 130000,
+                              left: 'left',
+                              top: 'bottom',
+                              text: ['高', '低'],           // 文本，默认为数值文本
+                              calculable: true
+                          },
+                          selectedMode: 'single',
+                          series: [
+                              {
+                                  name: '美食总量',
+                                  type: 'map',
+                                  map: 'china',
+                                  itemStyle: itemStyle,
+                                  showLegendSymbol: true,
+                                  roam: true,
+                                  data: data_z.data1,
+                              }
+                          ]
+                      });
+       });
+  });
+         fun_pie()
+          }
+             require(['/static/dist/echarts'], function (echarts) {
+                  // console.log('f1')
+                  require(['/static/map/js/china'], function () {
+                      // console.log('f2')
+                      ch = echarts.init(document.getElementById('main1'));
+                      var itemStyle = {
+                          normal: {
+                              borderColor: 'rgba(0, 0, 0, 0.2)'
+                          },
+                          emphasis: {
+                              shadowOffsetX: 0,
+                              shadowOffsetY: 0,
+                              shadowBlur: 20,
+                              borderWidth: 0,
+                              shadowColor: 'rgba(0, 0, 0, 0.5)'
+                          }
+                      };
+                      ch.setOption({
+                          tooltip: {},
+                          title: {
+                              text: '美食地图数据统计',
+                              subtext: '毕设_王凯',
+                              left: 'center',
+{#                              shadowColor: 'rgba(f, f, f, f)'#}
+                          },
+                          legend: {
+                              orient: 'vertical',
+                              left: 'left',
+                              data: []
+                          },
+                          visualMap: {
+                              min: 0,
+                              max: 130000,
+                              left: 'left',
+                              top: 'bottom',
+                              text: ['高', '低'],           // 文本，默认为数值文本
+                              calculable: true
+                          },
+                          selectedMode: 'single',
+                          series: [
+                              {
+                                  name: '美食总量',
+                                  type: 'map',
+                                  map: 'china',
+                                  itemStyle: itemStyle,
+                                  showLegendSymbol: true,
+                                  roam: true,
+                                  data: [{'value': 840, 'name': '北京'}]
+                              }
+                          ]
+                      });
+                      ch.on('click', function (param) {
+                          console.log(param);
+                      });
+      });
+  });
+          function fun_pie() {
+             require(['/static/dist/echarts'], function (echarts) {
+                  var chart = echarts.init(document.getElementById('main3'), null, {});
+                  var itemStyle = {
+                      normal: {
+                          // shadowBlur: 10,
+                          // shadowOffsetX: 0,
+                          // shadowOffsetY: 5,
+                          // shadowColor: 'rgba(0, 0, 0, 0.4)'
+                      }
+                  };
+                  chart.setOption({
+                      legend: {
+{#                          data: data.categories#}
+                          data:[]
+                      },
+                      tooltip: {},
+                      series: [{
+                          name: '美食总量',
+                          type: 'pie',
+                          stack: 'all',
+                          symbol: 'circle',
+                          symbolSize: 10,
+                          selectedMode: 'single',
+                          selectedOffset: 20,
+                          roseType: true,
+                          data: data_z.data_y,
+                          itemStyle: itemStyle
+                      }]
+                  });
+              })
+          }
+
+
+          require(['/static/dist/echarts'], function (echarts) {
+                  var chart = echarts.init(document.getElementById('main3'), null, {});
+                  var itemStyle = {
+                      normal: {
+                          // shadowBlur: 10,
+                          // shadowOffsetX: 0,
+                          // shadowOffsetY: 5,
+                          // shadowColor: 'rgba(0, 0, 0, 0.4)'
+                      }
+                  };
+                  chart.setOption({
+                      legend: {
+{#                          data: data.categories#}
+                          data:[]
+                      },
+                      tooltip: {},
+                      series: [{
+                          name: '美食总量',
+                          type: 'pie',
+                          stack: 'all',
+                          symbol: 'circle',
+                          symbolSize: 10,
+                          selectedMode: 'single',
+                          selectedOffset: 20,
+                          roseType: true,
+                          data:[{'value': 3, 'name': '佰味榴莲主题蛋糕(望京店)'}, {'value': 0, 'name': '香格蛋糕房(崔各庄乡店)'}, {'value': 361, 'name': '熙贝蛋糕'}, {'value': 5, 'name': '雨欣蛋糕房(郎辛庄店)'}, {'value': 10, 'name': '八喜冰激凌蛋糕(朝阳区农光里店)'}, {'value': 0, 'name': '红宝石蛋糕(百子湾店)'}, {'value': 34, 'name': 'VW蛋糕烘焙'}, {'value': 0, 'name': '麦田坊烘焙蛋糕披萨(青年路店)'}, {'value': 79, 'name': '爱乐美蛋糕(双井店)'}, {'value': 1, 'name': '哈尼轻奢甜品蛋糕坊'}, {'value': 0, 'name': '优思麦蛋糕'}, {'value': 0, 'name': '拔丝蛋糕(雨佳食品店)'}, {'value': 1, 'name': '纽罗宾蛋糕'}, {'value': 4, 'name': '树心旁千层蛋糕(爱琴海店)'}, {'value': 199, 'name': '法国麦田蛋糕工作室'}, {'value': 35, 'name': '提拉米苏俄式蛋糕'}, {'value': 23, 'name': '笑笑千层榴莲蛋糕'}, {'value': 2, 'name': '嘉兰蛋糕坊'}, {'value': 69, 'name': '微蛋糕工坊(修正路店)'}, {'value': 2, 'name': '罗丽东朝阳蛋糕店'}, {'value': 12, 'name': '东朝阳蛋糕(东朝阳路店)'}, {'value': 0, 'name': '甜多多水果千层蛋糕'}],
+                          itemStyle: itemStyle
+                      }]
+                  });
+
+              })
+
+
+
+
+
+</script>
+
+<script type="text/javascript">
+    window.onload=function (){
+          var html = "<table>";
+          for(var i=0; i<10; i++){
+                html += "<tr><td>"+"店铺名："+"赏渔重庆鱼火锅"+"</td><td>"+"店铺地址："+"许昌市东城区新兴路东段秋湖湿地商业街1号楼1层18商铺" +"</td><td>"+"联系电话："+"15637282912"+"</td><td>"+"营业时间："+"9:00--22:00"+ "</td><td>"+"评论量："+"4536"+"</td><td>"+"好评："+"4000"+"</td><td>"+"中评："+"500"+"</td><td>"+"差评："+"36"+"</td><td>"+"评分："+"4.6"+ "</td></tr>";
+
+          }
+          html += "</table>";
+          $("#right_right").html(html);
+    }
+</script>
+
+
+<script type="text/javascript">
+        $(function() {
+            //页面加载完成后获取类型信息
+            $.get('/get_type/', function (dic) {
+                type_name = $('#type_name')
+                $.each(dic.data, function (index, item) {
+                    type_name.append('<option value=' + item[0] + '>' + item[0] + '</option>');
+                })
+            });
+        })
+        </script>
+
+<script type="text/javascript">
+        $(function() {
+            //页面加载完成后获取评分信息
+            $.get('/get_form/', function (dic) {
+                evaluate = $('#evaluate')
+                $.each(dic.data, function (index, item) {
+                    evaluate.append('<option value=' + item[0] + '>' + item[0] + '</option>');
+                })
+            });
+        })
+        </script>
+
+<script type="text/javascript">
+        $(function(){
+            //页面加载完成后获取省信息，并添加到省select
+            $.get('/area2/',function(dic) {
+                pro=$('#pro')
+                $.each(dic.data,function(index,item){
+                    pro.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                })
+            });
+            //为省select绑定change事件，获取市信息，并添加到市select
+            $('#pro').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    city=$('#city');
+                    city.empty().append('<option value="">请选择市</option>');
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        city.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                });
+            });
+            //为市select绑定change事件，获取区县信息，并添加到区县select
+            $('#city').change(function(){
+                $.get('/area3_'+$(this).val()+'/',function(dic){
+                    dis=$('#dis');
+                    dis.empty().append('<option value="">请选择区县</option>');
+                    $.each(dic.data,function(index,item){
+                        dis.append('<option value='+item[0]+'>'+item[1]+'</option>');
+                    })
+                })
+            });
+
+        });
+    </script>
+
+</html>
