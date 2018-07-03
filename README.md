@@ -1,0 +1,2 @@
+# FoodMapSpiderNM
+spider,django,echarts
