@@ -41,4 +41,3 @@ $python craw_baidunuomi.py<br>
 ### 美食地图详细数据展示
 ![](https://github.com/Maxwellwk/FoodMapSpiderNM/blob/master/image/%E5%9B%BE%E7%89%8711.png)
 
-注：由于各种原因，数据包不能上传需要的私聊我！<br>
